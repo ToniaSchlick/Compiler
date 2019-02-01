@@ -56,7 +56,7 @@ base_stmt
 assign_stmt
     : assign_expr';';
 assign_expr
-    : id ':=' expr';';
+    : id ':=' expr;
 read_stmt
     : 'READ' '(' id_list ')'';';
 write_stmt

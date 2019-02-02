@@ -35,9 +35,13 @@ public class Driver {
         Vocabulary voc = lexer.getVocabulary();
         //lexer.get
         for (Token token : tokens) {
-            System.out.println("Token type: " + voc.getSymbolicName(token.getType()));
-            System.out.println("Token type value: " + token.getType());
-            System.out.println("Value: " + token.getText() + "\n");
+            if (voc.getSymbolicName(token.getType()) != null) {
+                System.out.println("Token Type: " + voc.getSymbolicName(token.getType()));
+            } else {
+                System.out.println("Token literal type: " + voc.getLiteralName(token.getType()));
+            }
+            //System.out.println("Token type value: " + token.getType());
+            System.out.println("Value: " + token.getText());
         }
     }
 }

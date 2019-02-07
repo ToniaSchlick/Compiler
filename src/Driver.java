@@ -20,11 +20,7 @@ public class Driver {
 
         Vocabulary voc = lexer.getVocabulary();
         for (Token token : tokens) {
-            if (voc.getSymbolicName(token.getType()) != null) {
-                System.out.println("Token Type: " + voc.getSymbolicName(token.getType()));
-            } else {
-                System.out.println("Token literal type: " + voc.getLiteralName(token.getType()));
-            }
+            System.out.println("Token Type: " + voc.getSymbolicName(token.getType()));
             System.out.println("Value: " + token.getText());
         }
     }

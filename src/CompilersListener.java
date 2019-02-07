@@ -7,13 +7,13 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface CompilersListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link CompilersParser#rule35}.
+	 * Enter a parse tree produced by {@link CompilersParser#rule1}.
 	 * @param ctx the parse tree
 	 */
-	void enterRule35(CompilersParser.Rule35Context ctx);
+	void enterRule1(CompilersParser.Rule1Context ctx);
 	/**
-	 * Exit a parse tree produced by {@link CompilersParser#rule35}.
+	 * Exit a parse tree produced by {@link CompilersParser#rule1}.
 	 * @param ctx the parse tree
 	 */
-	void exitRule35(CompilersParser.Rule35Context ctx);
+	void exitRule1(CompilersParser.Rule1Context ctx);
 }

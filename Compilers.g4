@@ -2,8 +2,14 @@ grammar Compilers;
 
 OPERATOR        : ':='|'+'|'-'|'*'|'/'|'='|'!='|'<'|'>'|'('|')'|';'|','|'<='|'>=';
 KEYWORD         : 'PROGRAM'|'BEGIN'|'END'|'FUNCTION'|'READ'|'WRITE'|'IF'|'ELSE'|'ENDIF'|'WHILE'|'ENDWHILE'|'CONTINUE'|'BREAK'|'RETURN'|'INT'|'VOID'|'STRING'|'FLOAT';
+COMMENT         : '--'(~'\n')* -> skip;
+INTLITERAL      : [0-9]+;
+FLOATLITERAL    : [0-9]*?'.'[0-9]+;
+STRINGLITERAL   : '"'(~'"')*?'"';
+IDENTIFIER      : [a-zA-Z]+[a-zA-Z0-9]*;
+WS              : [ \t\r\n]+ -> skip;
 
-rule35 : ;
+rule1:;
 /*
 program
     : 'PROGRAM' id 'BEGIN' pgm_body 'END';
@@ -95,41 +101,4 @@ compop
 
 while_stmt
     : 'WHILE' '(' cond ')' decl stmt_list 'ENDWHILE';
-*/
-
-COMMENT         : '--'(~'\n')* -> skip;
-INTLITERAL      : [0-9]+;
-FLOATLITERAL    : [0-9]*?'.'[0-9]+;
-STRINGLITERAL   : '"'(~'"')*?'"';
-IDENTIFIER      : [a-zA-Z]+[a-zA-Z0-9]*;
-WS              : [ \t\r\n]+ -> skip;
-
-/*
-an IDENTIFIER token will begin with a letter, and be followed by any number of letters and numbers.
-IDENTIFIERS are case sensitive.
-
-INTLITERAL: integer number
-            ex) 0, 123, 678
-FLOATLITERAL: floating point number available in two different format
-                yyyy.xxxxxx or .xxxxxxx
-            ex) 3.141592 , .1414 , .0001 , 456.98
-
-STRINGLITERAL: any sequence of characters except '"'
-            between '"' and '"'
-            ex) "Hello world!" , "***********" , "this is a string"
-
-COMMENT:
-      Starts with "--" and lasts till the end of line
-      ex) -- this is a comment
-      ex) -- any thing after the "--" is ignored
-
-
-Keywords
-
-PROGRAM,BEGIN,END,FUNCTION,READ,WRITE,
-IF,ELSE,ENDIF,WHILE,ENDWHILE,CONTINUE,BREAK,
-RETURN,INT,VOID,STRING,FLOAT
-
-Operators
-:= + - * / = != < > ( ) ; , <= >=
 */

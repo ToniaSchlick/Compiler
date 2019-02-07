@@ -15,13 +15,13 @@ public class CompilersBaseListener implements CompilersListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRule35(CompilersParser.Rule35Context ctx) { }
+	@Override public void enterRule1(CompilersParser.Rule1Context ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRule35(CompilersParser.Rule35Context ctx) { }
+	@Override public void exitRule1(CompilersParser.Rule1Context ctx) { }
 
 	/**
 	 * {@inheritDoc}

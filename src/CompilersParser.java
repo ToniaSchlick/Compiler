@@ -19,10 +19,10 @@ public class CompilersParser extends Parser {
 		OPERATOR=1, KEYWORD=2, COMMENT=3, INTLITERAL=4, FLOATLITERAL=5, STRINGLITERAL=6, 
 		IDENTIFIER=7, WS=8;
 	public static final int
-		RULE_rule35 = 0;
+		RULE_rule1 = 0;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"rule35"
+			"rule1"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -89,24 +89,24 @@ public class CompilersParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
-	public static class Rule35Context extends ParserRuleContext {
-		public Rule35Context(ParserRuleContext parent, int invokingState) {
+	public static class Rule1Context extends ParserRuleContext {
+		public Rule1Context(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_rule35; }
+		@Override public int getRuleIndex() { return RULE_rule1; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CompilersListener ) ((CompilersListener)listener).enterRule35(this);
+			if ( listener instanceof CompilersListener ) ((CompilersListener)listener).enterRule1(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CompilersListener ) ((CompilersListener)listener).exitRule35(this);
+			if ( listener instanceof CompilersListener ) ((CompilersListener)listener).exitRule1(this);
 		}
 	}
 
-	public final Rule35Context rule35() throws RecognitionException {
-		Rule35Context _localctx = new Rule35Context(_ctx, getState());
-		enterRule(_localctx, 0, RULE_rule35);
+	public final Rule1Context rule1() throws RecognitionException {
+		Rule1Context _localctx = new Rule1Context(_ctx, getState());
+		enterRule(_localctx, 0, RULE_rule1);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{

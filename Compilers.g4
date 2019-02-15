@@ -10,8 +10,6 @@ STRINGLITERAL   : '"'(~'"')*?'"';
 IDENTIFIER      : [a-zA-Z]+[a-zA-Z0-9]*;
 WS              : [ \t\r\n]+ -> skip;
 
-rule1:;
-/*
 program
     : 'PROGRAM' id 'BEGIN' pgm_body 'END';
 id
@@ -102,4 +100,3 @@ compop
 
 while_stmt
     : 'WHILE' '(' cond ')' decl stmt_list 'ENDWHILE';
-*/

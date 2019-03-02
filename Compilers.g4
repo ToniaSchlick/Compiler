@@ -10,6 +10,7 @@ STRINGLITERAL   : '"'(~'"')*?'"';
 IDENTIFIER      : [a-zA-Z]+[a-zA-Z0-9]*;
 WS              : [ \t\r\n]+ -> skip;
 
+/* Program */
 program
     : 'PROGRAM' id 'BEGIN' pgm_body 'END';
 id
@@ -19,10 +20,13 @@ pgm_body
 decl
     : string_decl decl | var_decl decl | ;
 
+/* Global String Declaration */
 string_decl
     : 'STRING' id ':=' str';';
 str
     : STRINGLITERAL;
+
+/* Variable Declaration */
 var_decl
     : var_type id_list ';';
 var_type
@@ -34,6 +38,7 @@ id_list
 id_tail
     : ',' id id_tail | ;
 
+/* Function Paramater List */
 param_decl_list
     : param_decl param_decl_tail | ;
 param_decl
@@ -41,6 +46,7 @@ param_decl
 param_decl_tail
     : ',' param_decl param_decl_tail | ;
 
+/* Function Declarations */
 func_declarations
     : func_decl func_declarations | ;
 func_decl
@@ -48,6 +54,7 @@ func_decl
 func_body
     : decl stmt_list;
 
+/* Statement List */
 stmt_list
     : stmt stmt_list | ;
 stmt
@@ -55,6 +62,7 @@ stmt
 base_stmt
     : assign_stmt | read_stmt | write_stmt | return_stmt;
 
+/* Basic Statements */
 assign_stmt
     : assign_expr';';
 assign_expr
@@ -66,6 +74,7 @@ write_stmt
 return_stmt
     : 'RETURN' expr ';';
 
+/* Expressions */
 expr
     : expr_prefix factor;
 expr_prefix
@@ -89,6 +98,7 @@ addop
 mulop
     : '*' | '/';
 
+/* Complex Statements and Condition */
 if_stmt
     : 'IF' '(' cond ')' decl stmt_list else_part 'ENDIF';
 else_part
@@ -98,5 +108,6 @@ cond
 compop
     : '<' | '>' | '=' | '!=' | '<=' | '>=';
 
+/* While statements */
 while_stmt
     : 'WHILE' '(' cond ')' decl stmt_list 'ENDWHILE';

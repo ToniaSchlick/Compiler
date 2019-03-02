@@ -1,8 +1,7 @@
-import jdk.jshell.spi.ExecutionControl;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import java.io.*;
+import java.util.List;
 
 public class Driver {
 
@@ -17,7 +16,6 @@ public class Driver {
             System.out.println("Could not read file");
             return;
         }
-
 
         parser.setErrorHandler(new ANTLRErrorStrategy() {
             @Override

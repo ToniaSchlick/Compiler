@@ -1,7 +1,6 @@
+import org.antlr.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.*;
-
 import java.io.*;
-import java.util.List;
 
 public class Driver {
 
@@ -9,14 +8,19 @@ public class Driver {
 
         CompilersLexer lexer;
         CompilersParser parser;
+        ParseTree tree;
+        Listener listener;
         try {
             lexer = new CompilersLexer(CharStreams.fromFileName(args[0]));
             parser = new CompilersParser(new CommonTokenStream(lexer));
+            tree = new ParseTree(parser);
+            listener = new Listener();
         } catch (IOException e){
             System.out.println("Could not read file");
             return;
         }
 
+        System.out.println(tree.getTokenStartIndex());
         parser.setErrorHandler(new ANTLRErrorStrategy() {
             @Override
             public void reset(Parser parser) {}

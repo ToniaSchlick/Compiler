@@ -15,14 +15,20 @@ public class SymbolTable {
         entries.add(new Entry(n, t, null));
     }
 
-    public void printTable(){
+    public void printTable(boolean last){
         System.out.printf("Symbol table %s\n", scope);
         for(Entry entry : entries) {
             System.out.printf("name %s type %s", entry.name, entry.type);
             if (entry.value != null) {
-                System.out.printf("value %s\n", entry.value);
+                if (last && entries.indexOf(entry) == entries.size()-1) {
+                    System.out.printf(" value %s", entry.value);
+                } else {
+                    System.out.printf(" value %s\n", entry.value);
+                }
             } else {
-                System.out.println();
+                if(!last && entries.indexOf(entry) != entries.size()-1) {
+                    System.out.println();
+                }
             }
         }
     }

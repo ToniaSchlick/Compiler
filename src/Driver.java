@@ -14,16 +14,12 @@ public class Driver {
         try {
             lexer = new CompilersLexer(CharStreams.fromFileName(args[0]));
             parser = new CompilersParser(new CommonTokenStream(lexer));
-            listener = new Listener(tree);
-            new ParseTreeWalker().walk(listener, parser.program());
-            tree.printTables();
         } catch (IOException e){
             System.out.println("Could not read file");
+            return;
         }
 
         /*Code for Part 2*/
-        /*
-        System.out.println(tree.getTokenStartIndex());
         parser.setErrorHandler(new ANTLRErrorStrategy() {
             @Override
             public void reset(Parser parser) {}
@@ -49,11 +45,18 @@ public class Driver {
             }
         });
 
+        listener = new Listener(tree);
+        new ParseTreeWalker().walk(listener, parser.program());
+        tree.printTables();
+
+        /*
         try {
-            parser.program();
-            System.out.println("Accepted");
+            //parser.program();
+            listener = new Listener(tree);
+            new ParseTreeWalker().walk(listener, parser.program());
+            tree.printTables();
         } catch (Exception e) {
-            System.out.println("Not Accepted");
+            System.out.printf("Not Accepted: %s", e);
         }
         */
 

@@ -25,7 +25,12 @@ public class TableTree {
 
     public void printTables(){
         for (SymbolTable table : tables) {
-            table.printTable();
+            if(tables.indexOf(table) != tables.size()-1) {
+                table.printTable(false);
+                System.out.println();
+            } else {
+                table.printTable(true);
+            }
         }
     }
 }

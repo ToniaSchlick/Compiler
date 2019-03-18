@@ -7,14 +7,17 @@ public class SymbolTable {
         scope = s;
     }
 
+    //adds a string to the symbol table
     public void add(String n, String t, String v) {
         entries.add(new Entry(n, t, v));
     }
 
+    //adds any other type of variable to the symbol table
     public void add(String n,String t) {
         entries.add(new Entry(n, t, null));
     }
 
+    //prints the values in the symbol table, without an extra line after the final entry
     public void printTable(boolean last){
         System.out.printf("Symbol table %s\n", scope);
         for(Entry entry : entries) {

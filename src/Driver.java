@@ -14,6 +14,9 @@ public class Driver {
         try {
             lexer = new CompilersLexer(CharStreams.fromFileName(args[0]));
             parser = new CompilersParser(new CommonTokenStream(lexer));
+            listener = new Listener(tree);
+            new ParseTreeWalker().walk(listener, parser.program());
+            tree.printTables();
         } catch (IOException e){
             System.out.println("Could not read file");
             return;
@@ -44,10 +47,6 @@ public class Driver {
                 throw new RuntimeException("Not good");
             }
         });
-
-        listener = new Listener(tree);
-        new ParseTreeWalker().walk(listener, parser.program());
-        tree.printTables();
 
         /*
         try {

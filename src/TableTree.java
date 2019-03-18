@@ -23,6 +23,7 @@ public class TableTree {
         return tables.get(depth.get(end));
     }
 
+    //prints all the tables, without an extra line after the final table
     public void printTables(){
         for (SymbolTable table : tables) {
             if(tables.indexOf(table) != tables.size()-1) {

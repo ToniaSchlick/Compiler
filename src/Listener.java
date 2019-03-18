@@ -1,7 +1,7 @@
 public class Listener extends CompilersBaseListener {
-
-    public Listener() {
-
+    TableTree tree;
+    public Listener(TableTree t) {
+        tree = t;
     }
 
     @Override

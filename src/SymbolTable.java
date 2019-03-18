@@ -16,7 +16,7 @@ public class SymbolTable {
     }
 
     public void printTable(){
-        System.out.println(scope);
+        System.out.printf("Symbol table %s\n", scope);
         for(Entry entry : entries) {
             System.out.printf("name %s type %s", entry.name, entry.type);
             if (entry.value != null) {

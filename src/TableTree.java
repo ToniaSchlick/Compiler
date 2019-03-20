@@ -3,9 +3,7 @@ import java.util.ArrayList;
 class TableTree {
     private ArrayList<SymbolTable> tables = new ArrayList<>();
     private ArrayList<Integer> depth = new ArrayList<>();
-    TableTree () {
-
-    }
+    TableTree () {}
 
     void newScope(String scope) {
         SymbolTable table = new SymbolTable(scope);

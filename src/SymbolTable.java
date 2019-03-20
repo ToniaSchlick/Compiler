@@ -8,6 +8,7 @@ class SymbolTable {
     }
 
     //adds a string to the symbol table
+    //returns false if variable name already exists in scope
     boolean add(String n, String t, String v) {
 
         for(Entry entry : entries) {
@@ -20,6 +21,7 @@ class SymbolTable {
     }
 
     //adds any other type of variable to the symbol table
+    //returns false if variable name already exists in scope
     boolean add(String n,String t) {
         for(Entry entry : entries) {
             if(entry.name.equals(n)) {
@@ -50,6 +52,7 @@ class SymbolTable {
     }
 }
 
+//container class to hold entry values
 class Entry {
     String name, type, value;
     Entry(String n, String t, String v) {

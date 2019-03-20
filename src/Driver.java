@@ -20,6 +20,9 @@ public class Driver {
             tree.printTables();
         } catch (IOException e){
             System.out.println("Could not read file");
+
+        //catches ParseCancellationException that can be thrown if a declaration error occurs
+        //logic to handle error is done elsewhere, just here to prevent program from spitting the error out
         } catch (ParseCancellationException e) {}
 
         /*Code for Part 2*/

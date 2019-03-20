@@ -1,14 +1,12 @@
-import java.util.ArrayList;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class Listener extends CompilersBaseListener {
-    TableTree tree;
-    int blockCount = 0;
-    ArrayList<String> type = new ArrayList<>();
-    ArrayList<Integer> typeDepth = new ArrayList<>();
-    String curVarType;
-    boolean varDeclaration = false;
+    private TableTree tree;
+    private int blockCount = 0;
+    private String curVarType;
+    private boolean varDeclaration = false;
 
-    public Listener(TableTree t) {
+    Listener(TableTree t) {
         tree = t;
     }
 
@@ -73,9 +71,13 @@ public class Listener extends CompilersBaseListener {
     }
 
     @Override
-    public void enterString_decl(CompilersParser.String_declContext ctx) {
+    public void enterString_decl(CompilersParser.String_declContext ctx) throws ParseCancellationException {
         SymbolTable table = tree.getCurrentTable();
-        table.add(ctx.id().IDENTIFIER().toString(), "STRING", ctx.str().STRINGLITERAL().toString());
+        boolean result = table.add(ctx.id().IDENTIFIER().toString(), "STRING", ctx.str().STRINGLITERAL().toString());
+        if(!result) {
+            System.out.printf("DECLARATION ERROR %s", ctx.id().IDENTIFIER().toString());
+            throw new ParseCancellationException();
+        }
     }
 
     @Override
@@ -85,18 +87,26 @@ public class Listener extends CompilersBaseListener {
     }
 
     @Override
-    public void enterId_list(CompilersParser.Id_listContext ctx) {
+    public void enterId_list(CompilersParser.Id_listContext ctx) throws ParseCancellationException {
         if (varDeclaration) {
             SymbolTable table = tree.getCurrentTable();
-            table.add(ctx.id().IDENTIFIER().toString(), curVarType);
+            boolean result = table.add(ctx.id().IDENTIFIER().toString(), curVarType);
+            if(!result) {
+                System.out.printf("DECLARATION ERROR %s", ctx.id().IDENTIFIER().toString());
+                throw new ParseCancellationException();
+            }
         }
     }
 
     @Override
-    public void enterId_tail(CompilersParser.Id_tailContext ctx) {
+    public void enterId_tail(CompilersParser.Id_tailContext ctx) throws ParseCancellationException {
         if(varDeclaration && ctx.id() != null) {
             SymbolTable table = tree.getCurrentTable();
-            table.add(ctx.id().IDENTIFIER().toString(), curVarType);
+            boolean result = table.add(ctx.id().IDENTIFIER().toString(), curVarType);
+            if(!result) {
+                System.out.printf("DECLARATION ERROR %s", ctx.id().IDENTIFIER().toString());
+                throw new ParseCancellationException();
+            }
         }
     }
 
@@ -107,8 +117,12 @@ public class Listener extends CompilersBaseListener {
     }
 
     @Override
-    public void enterParam_decl(CompilersParser.Param_declContext ctx) {
+    public void enterParam_decl(CompilersParser.Param_declContext ctx) throws ParseCancellationException {
         SymbolTable table = tree.getCurrentTable();
-        table.add(ctx.id().IDENTIFIER().toString(), ctx.var_type().getText());
+        boolean result = table.add(ctx.id().IDENTIFIER().toString(), ctx.var_type().getText());
+        if(!result) {
+            System.out.printf("DECLARATION ERROR %s", ctx.id().IDENTIFIER().toString());
+            throw new ParseCancellationException();
+        }
     }
 }

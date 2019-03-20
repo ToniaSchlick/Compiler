@@ -1,24 +1,37 @@
 import java.util.ArrayList;
 
-public class SymbolTable {
-    String scope;
-    ArrayList<Entry> entries = new ArrayList<>();
+class SymbolTable {
+    private String scope;
+    private ArrayList<Entry> entries = new ArrayList<>();
     SymbolTable(String s) {
         scope = s;
     }
 
     //adds a string to the symbol table
-    public void add(String n, String t, String v) {
+    boolean add(String n, String t, String v) {
+
+        for(Entry entry : entries) {
+            if(entry.name.equals(n)) {
+                return false;
+            }
+        }
         entries.add(new Entry(n, t, v));
+        return true;
     }
 
     //adds any other type of variable to the symbol table
-    public void add(String n,String t) {
+    boolean add(String n,String t) {
+        for(Entry entry : entries) {
+            if(entry.name.equals(n)) {
+                return false;
+            }
+        }
         entries.add(new Entry(n, t, null));
+        return true;
     }
 
     //prints the values in the symbol table, without an extra line after the final entry
-    public void printTable(boolean last){
+    void printTable(boolean last){
         System.out.printf("Symbol table %s\n", scope);
         for(Entry entry : entries) {
             System.out.printf("name %s type %s", entry.name, entry.type);

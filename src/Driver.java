@@ -1,4 +1,5 @@
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.*;
@@ -19,10 +20,10 @@ public class Driver {
             tree.printTables();
         } catch (IOException e){
             System.out.println("Could not read file");
-            return;
-        }
+        } catch (ParseCancellationException e) {}
 
         /*Code for Part 2*/
+        /*
         parser.setErrorHandler(new ANTLRErrorStrategy() {
             @Override
             public void reset(Parser parser) {}
@@ -48,7 +49,6 @@ public class Driver {
             }
         });
 
-        /*
         try {
             //parser.program();
             listener = new Listener(tree);

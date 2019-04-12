@@ -18,7 +18,7 @@ public class Driver {
             parser = new CompilersParser(new CommonTokenStream(lexer));
             listener = new Listener(tree, ast);
             new ParseTreeWalker().walk(listener, parser.program());
-            tree.printTables();
+            //tree.printTables();
         } catch (IOException e){
             System.out.println("Could not read file");
 

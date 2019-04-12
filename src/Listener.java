@@ -28,6 +28,7 @@ public class Listener extends CompilersBaseListener {
     public void exitProgram(CompilersParser.ProgramContext ctx) {
         tree.exitCurrentScope();
         roots.pop();
+        ast.currentNode.printSubTree();
     }
 
     @Override
@@ -108,6 +109,15 @@ public class Listener extends CompilersBaseListener {
             System.out.printf("DECLARATION ERROR %s", ctx.id().IDENTIFIER().toString());
             throw new ParseCancellationException();
         }
+        ast.currentNode = ast.currentNode.addNode(":=", "r", "assign");
+        ast.currentNode.addNode(ctx.id().IDENTIFIER().toString(), "l", "id");
+        ast.currentNode.addNode(ctx.str().STRINGLITERAL().toString(), "l", "literal");
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitString_decl(CompilersParser.String_declContext ctx) {
+        ast.currentNode = roots.pop().parent;
     }
 
     @Override
@@ -154,6 +164,28 @@ public class Listener extends CompilersBaseListener {
     }
 
     @Override
+    public void enterWrite_stmt(CompilersParser.Write_stmtContext ctx) {
+        ast.currentNode = ast.currentNode.addNode("Write", "r", "write");
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitWrite_stmt(CompilersParser.Write_stmtContext ctx) {
+        ast.currentNode = roots.pop().parent;
+    }
+
+    @Override
+    public void enterRead_stmt(CompilersParser.Read_stmtContext ctx) {
+        ast.currentNode = ast.currentNode.addNode("Read", "r", "read");
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitRead_stmt(CompilersParser.Read_stmtContext ctx) {
+        ast.currentNode = roots.pop().parent;
+    }
+
+    @Override
     public void enterAssign_expr(CompilersParser.Assign_exprContext ctx) {
         ast.currentNode = ast.currentNode.addNode(":=", "r", "assign");
         roots.push(ast.currentNode);
@@ -163,7 +195,6 @@ public class Listener extends CompilersBaseListener {
     @Override
     public void exitAssign_expr(CompilersParser.Assign_exprContext ctx) {
         ast.currentNode = roots.pop();
-        ast.currentNode.printSubTree();
         ast.currentNode = ast.currentNode.parent;
     }
 

@@ -3,6 +3,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class Driver {
 
@@ -12,13 +13,19 @@ public class Driver {
         CompilersParser parser;
         Listener listener;
         TableTree tree = new TableTree();
-        AST ast = new AST();
+        AST ast = new AST(tree);
         try {
             lexer = new CompilersLexer(CharStreams.fromFileName(args[0]));
             parser = new CompilersParser(new CommonTokenStream(lexer));
             listener = new Listener(tree, ast);
             new ParseTreeWalker().walk(listener, parser.program());
             //tree.printTables();
+            ast.root.printSubTree();
+            //ast.table.printTables();
+            ArrayList<String> ac3 = ast.buildCode();
+            for (String line : ac3) {
+                System.out.println(line);
+            }
         } catch (IOException e){
             System.out.println("Could not read file");
 

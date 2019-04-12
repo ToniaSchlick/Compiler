@@ -28,7 +28,6 @@ public class Listener extends CompilersBaseListener {
     public void exitProgram(CompilersParser.ProgramContext ctx) {
         tree.exitCurrentScope();
         roots.pop();
-        ast.currentNode.printSubTree();
     }
 
     @Override
@@ -111,7 +110,7 @@ public class Listener extends CompilersBaseListener {
         }
         ast.currentNode = ast.currentNode.addNode(":=", "r", "assign");
         ast.currentNode.addNode(ctx.id().IDENTIFIER().toString(), "l", "id");
-        ast.currentNode.addNode(ctx.str().STRINGLITERAL().toString(), "l", "literal");
+        ast.currentNode.addNode(ctx.str().STRINGLITERAL().toString(), "c", "literal");
         roots.push(ast.currentNode);
     }
 
@@ -299,9 +298,9 @@ public class Listener extends CompilersBaseListener {
     @Override
     public void enterPrimary(CompilersParser.PrimaryContext ctx) {
         if (ctx.FLOATLITERAL() != null) {
-            ast.currentNode = ast.currentNode.addNode(ctx.FLOATLITERAL().toString(), "l", "literal");
+            ast.currentNode = ast.currentNode.addNode(ctx.FLOATLITERAL().toString(), "c", "literal");
         } else if (ctx.INTLITERAL() != null) {
-            ast.currentNode = ast.currentNode.addNode(ctx.INTLITERAL().toString(), "l", "literal");
+            ast.currentNode = ast.currentNode.addNode(ctx.INTLITERAL().toString(), "c", "literal");
         } else {
             ast.currentNode = ast.currentNode.addNode(null, "r", "primary");
         }

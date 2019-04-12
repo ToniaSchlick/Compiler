@@ -3,10 +3,13 @@ import java.util.ArrayList;
 class AST {
     ASTNode root;
     ASTNode currentNode;
+    static int numTemp = 0;
+    TableTree table;
 
-    AST() {
+    AST(TableTree s) {
         root = new ASTNode("GLOBAL", "r", null);
         currentNode = root;
+        table = s;
         /*
         structure = s;
         root = new ASTNode();
@@ -20,10 +23,15 @@ class AST {
         */
     }
 
-    String buildCode() {
-        String code = "";
+    ArrayList<String> buildCode() {
+        ArrayList<String> code = new ArrayList<>();
 
         return code;
+    }
+
+    static String newTemp() {
+        numTemp++;
+        return "T" + numTemp;
     }
 }
 
@@ -43,9 +51,13 @@ class ASTNode {
         rule = r;
     }
 
-    void initialize(String v, String t) {
-        value = v;
-        type = t;
+    ArrayList<String> buildCode() {
+        ArrayList<String> code = new ArrayList<>();
+        for (ASTNode child : children) {
+            code.addAll(child.buildCode());
+        }
+
+        return code;
     }
 
     ASTNode addNode(String v, String t, String r) {

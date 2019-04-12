@@ -109,14 +109,14 @@ public class Listener extends CompilersBaseListener {
             throw new ParseCancellationException();
         }
         ast.currentNode = ast.currentNode.addNode(":=", "r", "assign");
-        ast.currentNode.addNode(ctx.id().IDENTIFIER().toString(), "l", "id");
-        ast.currentNode.addNode(ctx.str().STRINGLITERAL().toString(), "c", "literal");
         roots.push(ast.currentNode);
     }
 
     @Override
     public void exitString_decl(CompilersParser.String_declContext ctx) {
-        ast.currentNode = roots.pop().parent;
+        ast.currentNode = roots.pop();
+        ast.currentNode.addNode(ctx.str().STRINGLITERAL().toString(), "c", "literal");
+        ast.currentNode = ast.currentNode.parent;
     }
 
     @Override

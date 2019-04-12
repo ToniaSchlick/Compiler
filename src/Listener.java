@@ -1,34 +1,46 @@
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
+import java.util.Stack;
+
 public class Listener extends CompilersBaseListener {
     private TableTree tree;
     private int blockCount = 0;
     private String curVarType;
     private boolean varDeclaration = false;
+    private AST ast;
+    private Stack<ASTNode> roots = new Stack<>();
+    private ASTNode nodePointer = null;
+    private ASTNode previousPointer = null;
 
-    Listener(TableTree t) {
+    Listener(TableTree t, AST a) {
         tree = t;
+        ast = a;
     }
 
     /*Functions to enter and exit scope*/
     @Override
     public void enterProgram(CompilersParser.ProgramContext ctx) {
         tree.newScope("GLOBAL");
+        roots.push(ast.root);
     }
 
     @Override
     public void exitProgram(CompilersParser.ProgramContext ctx) {
         tree.exitCurrentScope();
+        roots.pop();
     }
 
     @Override
     public void enterFunc_decl(CompilersParser.Func_declContext ctx) {
         tree.newScope(ctx.id().IDENTIFIER().toString());
+        ast.currentNode = ast.currentNode.addNode(ctx.id().IDENTIFIER().toString(), "r", "func_decl");
+        roots.push(ast.currentNode);
     }
 
     @Override
     public void exitFunc_decl(CompilersParser.Func_declContext ctx) {
         tree.exitCurrentScope();
+        ast.currentNode = roots.pop().parent;
     }
 
     @Override
@@ -139,5 +151,148 @@ public class Listener extends CompilersBaseListener {
             System.out.printf("DECLARATION ERROR %s", ctx.id().IDENTIFIER().toString());
             throw new ParseCancellationException();
         }
+    }
+
+    @Override
+    public void enterAssign_expr(CompilersParser.Assign_exprContext ctx) {
+        ast.currentNode = ast.currentNode.addNode(":=", "r", "assign");
+        roots.push(ast.currentNode);
+        //ast.currentNode.addNode(ctx.id().IDENTIFIER().toString(), "l", "id");
+    }
+
+    @Override
+    public void exitAssign_expr(CompilersParser.Assign_exprContext ctx) {
+        ast.currentNode = roots.pop();
+        ast.currentNode.printSubTree();
+        ast.currentNode = ast.currentNode.parent;
+    }
+
+    @Override
+    public void enterId(CompilersParser.IdContext ctx) {
+        ast.currentNode.addNode(ctx.IDENTIFIER().toString(), "l", "id");
+    }
+
+    @Override
+    public void enterExpr(CompilersParser.ExprContext ctx) {
+        ast.currentNode = ast.currentNode.addNode(null, "r", "expr");
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitExpr(CompilersParser.ExprContext ctx) {
+        ast.currentNode = roots.pop();
+        if (ast.currentNode.children.get(0).children.size() == 0) {
+            ast.currentNode.parent.replace(ast.currentNode, ast.currentNode.children.get(1));
+        } else {
+            ast.currentNode.children.get(0).children.add(ast.currentNode.children.get(1));
+            ast.currentNode.parent.replace(ast.currentNode, ast.currentNode.children.get(0));
+        }
+        ast.currentNode = ast.currentNode.parent;
+    }
+
+    @Override
+    public void enterExpr_prefix(CompilersParser.Expr_prefixContext ctx) {
+        ast.currentNode = ast.currentNode.addNode(null, "r", "expr_prefix");
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitExpr_prefix(CompilersParser.Expr_prefixContext ctx) {
+        ast.currentNode = roots.pop();
+        if (ctx.addop() != null) {
+            ASTNode addop = ast.currentNode.children.get(2);
+            if (ast.currentNode.children.get(0).children.size() == 0) {
+                addop.children.add(ast.currentNode.children.get(1));
+            } else {
+                ast.currentNode.children.get(0).children.add(ast.currentNode.children.get(1));
+                addop.children.add(ast.currentNode.children.get(0));
+            }
+            ast.currentNode.parent.replace(ast.currentNode, addop);
+        }
+        ast.currentNode = ast.currentNode.parent;
+    }
+
+    @Override
+    public void enterFactor(CompilersParser.FactorContext ctx) {
+        ast.currentNode = ast.currentNode.addNode(null, "r", "factor");
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitFactor(CompilersParser.FactorContext ctx) {
+        ast.currentNode = roots.pop();
+        if (ast.currentNode.children.get(0).children.size() == 0) {
+            ast.currentNode.parent.replace(ast.currentNode, ast.currentNode.children.get(1));
+        } else {
+            ast.currentNode.children.get(0).children.add(ast.currentNode.children.get(1));
+            ast.currentNode.parent.replace(ast.currentNode, ast.currentNode.children.get(0));
+        }
+        ast.currentNode = ast.currentNode.parent;
+    }
+
+    @Override
+    public void enterFactor_prefix(CompilersParser.Factor_prefixContext ctx) {
+        ast.currentNode = ast.currentNode.addNode(null, "r", "factor_prefix");
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitFactor_prefix(CompilersParser.Factor_prefixContext ctx) {
+        ast.currentNode = roots.pop();
+        if (ctx.mulop() != null) {
+            ASTNode mulop = ast.currentNode.children.get(2);
+            if (ast.currentNode.children.get(0).children.size() == 0) {
+                mulop.children.add(ast.currentNode.children.get(1));
+            } else {
+                ast.currentNode.children.get(0).children.add(ast.currentNode.children.get(1));
+                mulop.children.add(ast.currentNode.children.get(0));
+            }
+            ast.currentNode.parent.replace(ast.currentNode, mulop);
+        }
+        ast.currentNode = ast.currentNode.parent;
+    }
+
+    @Override
+    public void enterPostfix_expr(CompilersParser.Postfix_exprContext ctx) {
+        ast.currentNode = ast.currentNode.addNode(null, "r", "postfix_expr");
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitPostfix_expr(CompilersParser.Postfix_exprContext ctx) {
+        ast.currentNode = roots.pop();
+        ast.currentNode.parent.replace(ast.currentNode, ast.currentNode.children.get(0));
+        ast.currentNode = ast.currentNode.parent;
+    }
+
+    @Override
+    public void enterPrimary(CompilersParser.PrimaryContext ctx) {
+        if (ctx.FLOATLITERAL() != null) {
+            ast.currentNode = ast.currentNode.addNode(ctx.FLOATLITERAL().toString(), "l", "literal");
+        } else if (ctx.INTLITERAL() != null) {
+            ast.currentNode = ast.currentNode.addNode(ctx.INTLITERAL().toString(), "l", "literal");
+        } else {
+            ast.currentNode = ast.currentNode.addNode(null, "r", "primary");
+        }
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitPrimary(CompilersParser.PrimaryContext ctx) {
+        ast.currentNode = roots.pop();
+        if (!ast.currentNode.rule.equals("literal")) {
+            ast.currentNode.parent.replace(ast.currentNode, ast.currentNode.children.get(0));
+        }
+        ast.currentNode = ast.currentNode.parent;
+    }
+
+    @Override
+    public void enterMulop(CompilersParser.MulopContext ctx) {
+        ast.currentNode.addNode(ctx.getText(), "r", "mulop");
+    }
+
+    @Override
+    public void enterAddop(CompilersParser.AddopContext ctx) {
+        ast.currentNode.addNode(ctx.getText(), "r", "addop");
     }
 }

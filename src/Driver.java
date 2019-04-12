@@ -12,10 +12,11 @@ public class Driver {
         CompilersParser parser;
         Listener listener;
         TableTree tree = new TableTree();
+        AST ast = new AST();
         try {
             lexer = new CompilersLexer(CharStreams.fromFileName(args[0]));
             parser = new CompilersParser(new CommonTokenStream(lexer));
-            listener = new Listener(tree);
+            listener = new Listener(tree, ast);
             new ParseTreeWalker().walk(listener, parser.program());
             tree.printTables();
         } catch (IOException e){

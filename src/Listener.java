@@ -48,11 +48,18 @@ public class Listener extends CompilersBaseListener {
         //System.out.println("Entering IF");
         blockCount++;
         tree.newScope("BLOCK " + blockCount);
+        ast.currentNode = ast.currentNode.addNode(null, "r", "if_stmt");
+        roots.push(ast.currentNode);
     }
 
     @Override
     public void exitIf_stmt(CompilersParser.If_stmtContext ctx) {
         tree.exitCurrentScope();
+        ast.currentNode = roots.pop();
+        if (ast.currentNode.children.get(2).children.size() == 0) {
+            ast.currentNode.children.remove(2);
+        }
+        ast.currentNode = ast.currentNode.parent;
     }
 
     @Override
@@ -62,6 +69,8 @@ public class Listener extends CompilersBaseListener {
             blockCount++;
             tree.newScope("BLOCK " + blockCount);
         }
+        ast.currentNode = ast.currentNode.addNode(null, "r", "else_stmt");
+        roots.push(ast.currentNode);
     }
 
     @Override
@@ -70,17 +79,41 @@ public class Listener extends CompilersBaseListener {
         if (ctx.decl() != null) {
             tree.exitCurrentScope();
         }
+        ast.currentNode = roots.pop().parent;
+    }
+
+    @Override
+    public void enterCond(CompilersParser.CondContext ctx) {
+        ast.currentNode = ast.currentNode.addNode(null, "r", "cond");
+        roots.push(ast.currentNode);
+    }
+
+    @Override
+    public void exitCond(CompilersParser.CondContext ctx) {
+        ast.currentNode = roots.pop();
+        ast.currentNode.children.get(1).children.add(ast.currentNode.children.get(0));
+        ast.currentNode.children.get(1).children.add(ast.currentNode.children.get(2));
+        ast.currentNode.parent.replace(ast.currentNode, ast.currentNode.children.get(1));
+        ast.currentNode = ast.currentNode.parent;
+    }
+
+    @Override
+    public void enterCompop(CompilersParser.CompopContext ctx) {
+        ast.currentNode.addNode(ctx.getText(), "r", "comp");
     }
 
     @Override
     public void enterWhile_stmt(CompilersParser.While_stmtContext ctx) {
         blockCount++;
         tree.newScope("BLOCK " + blockCount);
+        ast.currentNode = ast.currentNode.addNode(null, "r", "while_stmt");
+        roots.push(ast.currentNode);
     }
 
     @Override
     public void exitWhile_stmt(CompilersParser.While_stmtContext ctx) {
         tree.exitCurrentScope();
+        ast.currentNode = roots.pop().parent;
     }
 
     /*Functions to ensure variables are actually being declared*/
@@ -194,6 +227,7 @@ public class Listener extends CompilersBaseListener {
     @Override
     public void exitAssign_expr(CompilersParser.Assign_exprContext ctx) {
         ast.currentNode = roots.pop();
+        System.out.println(ctx.getText());
         ast.currentNode = ast.currentNode.parent;
     }
 

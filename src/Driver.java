@@ -19,9 +19,7 @@ public class Driver {
             parser = new CompilersParser(new CommonTokenStream(lexer));
             listener = new Listener(tree, ast);
             new ParseTreeWalker().walk(listener, parser.program());
-            //tree.printTables();
             ast.root.printSubTree();
-            //ast.table.printTables();
             ArrayList<String> ac3 = ast.buildCode();
             for (String line : ac3) {
                 System.out.println(line);

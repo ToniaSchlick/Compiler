@@ -21,6 +21,10 @@ class TableTree {
         return tables.get(depth.get(end));
     }
 
+    SymbolTable getGlobal() {
+        return tables.get(0);
+    }
+
     //prints all the tables, without an extra line after the final table
     void printTables(){
         for (SymbolTable table : tables) {

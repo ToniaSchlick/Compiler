@@ -3,24 +3,27 @@ import java.util.ArrayList;
 class AST {
     ASTNode root;
     ASTNode currentNode;
-    static int numTemp = 0;
     TableTree table;
+
+    //constants to be used for code generation
+    static int numTemp = 0;
+    static final String FUNC = "func_decl";
+    static final String WHILE = "while_stmt";
+    static final String IF = "if_stmt";
+    static final String ELSE = "else_stmt";
+    static final String COMP = "comp";
+    static final String ASSIGN = "assign";
+    static final String LITERAL = "literal";
+    static final String WRITE = "write";
+    static final String READ = "read";
+    static final String ID = "id";
+    static final String MULOP = "mulop";
+    static final String ADDOP = "addop";
 
     AST(TableTree s) {
         root = new ASTNode("GLOBAL", "r", null);
         currentNode = root;
         table = s;
-        /*
-        structure = s;
-        root = new ASTNode();
-        if(structure.equals("assign")) {
-            root.value = ":=";
-        } else if (structure.equals("while")) {
-            root.value = "while_stmt";
-        } else if (structure.equals("if")) {
-            root.value = "if_stmt";
-        }
-        */
     }
 
     ArrayList<String> buildCode() {
@@ -31,7 +34,7 @@ class AST {
 
     static String newTemp() {
         numTemp++;
-        return "T" + numTemp;
+        return "$T" + numTemp;
     }
 }
 
@@ -84,23 +87,5 @@ class ASTNode {
             child.printSubTree();
         }
         System.out.printf("Value: %s; Rule: %s\n", value, rule);
-    }
-
-    ASTNode nextChild() {
-        if (currentChild + 1 < children.size()) {
-            currentChild++;
-            return children.get(currentChild);
-        } else {
-            return null;
-        }
-    }
-
-    ASTNode previousChild() {
-        if (currentChild - 1 >= 0) {
-            currentChild--;
-            return children.get(currentChild);
-        } else {
-            return null;
-        }
     }
 }

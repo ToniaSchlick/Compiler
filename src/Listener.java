@@ -33,7 +33,7 @@ public class Listener extends CompilersBaseListener {
     @Override
     public void enterFunc_decl(CompilersParser.Func_declContext ctx) {
         tree.newScope(ctx.id().IDENTIFIER().toString());
-        ast.currentNode = ast.currentNode.addNode(ctx.id().IDENTIFIER().toString(), "r", "func_decl");
+        ast.currentNode = ast.currentNode.addNode(ctx.id().IDENTIFIER().toString(), "r", AST.FUNC);
         roots.push(ast.currentNode);
     }
 
@@ -48,7 +48,7 @@ public class Listener extends CompilersBaseListener {
         //System.out.println("Entering IF");
         blockCount++;
         tree.newScope("BLOCK " + blockCount);
-        ast.currentNode = ast.currentNode.addNode(null, "r", "if_stmt");
+        ast.currentNode = ast.currentNode.addNode(null, "r", AST.IF);
         roots.push(ast.currentNode);
     }
 
@@ -69,7 +69,7 @@ public class Listener extends CompilersBaseListener {
             blockCount++;
             tree.newScope("BLOCK " + blockCount);
         }
-        ast.currentNode = ast.currentNode.addNode(null, "r", "else_stmt");
+        ast.currentNode = ast.currentNode.addNode(null, "r", AST.ELSE);
         roots.push(ast.currentNode);
     }
 
@@ -99,14 +99,14 @@ public class Listener extends CompilersBaseListener {
 
     @Override
     public void enterCompop(CompilersParser.CompopContext ctx) {
-        ast.currentNode.addNode(ctx.getText(), "r", "comp");
+        ast.currentNode.addNode(ctx.getText(), "r", AST.COMP);
     }
 
     @Override
     public void enterWhile_stmt(CompilersParser.While_stmtContext ctx) {
         blockCount++;
         tree.newScope("BLOCK " + blockCount);
-        ast.currentNode = ast.currentNode.addNode(null, "r", "while_stmt");
+        ast.currentNode = ast.currentNode.addNode(null, "r", AST.WHILE);
         roots.push(ast.currentNode);
     }
 
@@ -121,12 +121,17 @@ public class Listener extends CompilersBaseListener {
     public void enterVar_decl(CompilersParser.Var_declContext ctx) {
         curVarType = ctx.var_type().getText();
         varDeclaration = true;
+        //ast.currentNode = ast.currentNode.addNode(null, "r", "decl");
+        //roots.push(ast.currentNode);
     }
 
     @Override
     public void exitVar_decl(CompilersParser.Var_declContext ctx) {
         curVarType = null;
         varDeclaration = false;
+        //ast.currentNode = roots.pop();
+        //ast.currentNode.parent.children.remove(ast.currentNode);
+        //ast.currentNode = ast.currentNode.parent;
     }
 
     /*Functions to handle adding variables to the symbol table*/
@@ -141,14 +146,14 @@ public class Listener extends CompilersBaseListener {
             System.out.printf("DECLARATION ERROR %s", ctx.id().IDENTIFIER().toString());
             throw new ParseCancellationException();
         }
-        ast.currentNode = ast.currentNode.addNode(":=", "r", "assign");
+        ast.currentNode = ast.currentNode.addNode(":=", "r", AST.ASSIGN);
         roots.push(ast.currentNode);
     }
 
     @Override
     public void exitString_decl(CompilersParser.String_declContext ctx) {
         ast.currentNode = roots.pop();
-        ast.currentNode.addNode(ctx.str().STRINGLITERAL().toString(), "c", "literal");
+        ast.currentNode.addNode(ctx.str().STRINGLITERAL().toString(), "c", AST.LITERAL);
         ast.currentNode = ast.currentNode.parent;
     }
 
@@ -197,7 +202,7 @@ public class Listener extends CompilersBaseListener {
 
     @Override
     public void enterWrite_stmt(CompilersParser.Write_stmtContext ctx) {
-        ast.currentNode = ast.currentNode.addNode("Write", "r", "write");
+        ast.currentNode = ast.currentNode.addNode("Write", "r", AST.WRITE);
         roots.push(ast.currentNode);
     }
 
@@ -208,7 +213,7 @@ public class Listener extends CompilersBaseListener {
 
     @Override
     public void enterRead_stmt(CompilersParser.Read_stmtContext ctx) {
-        ast.currentNode = ast.currentNode.addNode("Read", "r", "read");
+        ast.currentNode = ast.currentNode.addNode("Read", "r", AST.READ);
         roots.push(ast.currentNode);
     }
 
@@ -219,7 +224,7 @@ public class Listener extends CompilersBaseListener {
 
     @Override
     public void enterAssign_expr(CompilersParser.Assign_exprContext ctx) {
-        ast.currentNode = ast.currentNode.addNode(":=", "r", "assign");
+        ast.currentNode = ast.currentNode.addNode(":=", "r", AST.ASSIGN);
         roots.push(ast.currentNode);
         //ast.currentNode.addNode(ctx.id().IDENTIFIER().toString(), "l", "id");
     }
@@ -227,13 +232,14 @@ public class Listener extends CompilersBaseListener {
     @Override
     public void exitAssign_expr(CompilersParser.Assign_exprContext ctx) {
         ast.currentNode = roots.pop();
-        System.out.println(ctx.getText());
         ast.currentNode = ast.currentNode.parent;
     }
 
     @Override
     public void enterId(CompilersParser.IdContext ctx) {
-        ast.currentNode.addNode(ctx.IDENTIFIER().toString(), "l", "id");
+        if (ast.currentNode.value != "GLOBAL") {
+            ast.currentNode.addNode(ctx.IDENTIFIER().toString(), "l", AST.ID);
+        }
     }
 
     @Override
@@ -332,9 +338,9 @@ public class Listener extends CompilersBaseListener {
     @Override
     public void enterPrimary(CompilersParser.PrimaryContext ctx) {
         if (ctx.FLOATLITERAL() != null) {
-            ast.currentNode = ast.currentNode.addNode(ctx.FLOATLITERAL().toString(), "c", "literal");
+            ast.currentNode = ast.currentNode.addNode(ctx.FLOATLITERAL().toString(), "c", AST.LITERAL);
         } else if (ctx.INTLITERAL() != null) {
-            ast.currentNode = ast.currentNode.addNode(ctx.INTLITERAL().toString(), "c", "literal");
+            ast.currentNode = ast.currentNode.addNode(ctx.INTLITERAL().toString(), "c", AST.LITERAL);
         } else {
             ast.currentNode = ast.currentNode.addNode(null, "r", "primary");
         }
@@ -352,11 +358,11 @@ public class Listener extends CompilersBaseListener {
 
     @Override
     public void enterMulop(CompilersParser.MulopContext ctx) {
-        ast.currentNode.addNode(ctx.getText(), "r", "mulop");
+        ast.currentNode.addNode(ctx.getText(), "r", AST.MULOP);
     }
 
     @Override
     public void enterAddop(CompilersParser.AddopContext ctx) {
-        ast.currentNode.addNode(ctx.getText(), "r", "addop");
+        ast.currentNode.addNode(ctx.getText(), "r", AST.ADDOP);
     }
 }

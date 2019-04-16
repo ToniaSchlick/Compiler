@@ -28,7 +28,6 @@ class AST {
         root = new ASTNode("GLOBAL", "r", AST.GLOBAL);
         //set that node as the current node
         currentNode = root;
-        //initialize the symbol table tree for the class
     }
 
     //begin building the code
@@ -54,9 +53,9 @@ class AST {
 class ASTNode {
     //the temporary value for the node when building the code
     private String temp;
-    //what type the node is: 'r', 'l', 'c'
+    //what AST type the node is: 'r', 'l', 'c'
     private String type;
-    //the actual value stored in the node, can be null
+    //the actual value stored in the node, can be null, variable name, literal, or an operator
     String value;
     //what rule the node was created from
     String rule;
@@ -214,7 +213,7 @@ class ASTNode {
     }
 
     //replaces the old node in the parent's children with a new node
-    //used for cutting out unnecessary nodes when bulding the AST
+    //used for cutting out unnecessary nodes when building the AST
     void replace(ASTNode old, ASTNode newer) {
         newer.parent = this;
         children.set(children.indexOf(old), newer);

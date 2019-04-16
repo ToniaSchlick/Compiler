@@ -21,9 +21,11 @@ public class Driver {
             new ParseTreeWalker().walk(listener, parser.program());
             //ast.root.printSubTree();
             ArrayList<String> ac3 = ast.buildCode(tree.getGlobal());
+            System.out.println(";IR CODE");
             for (String line : ac3) {
-                System.out.println(line);
+                System.out.println(";" + line);
             }
+            System.out.println(";tiny code");
         } catch (IOException e){
             System.out.println("Could not read file");
 

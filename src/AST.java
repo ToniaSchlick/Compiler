@@ -13,16 +13,19 @@ class AST {
     static final String ELSE = "else_stmt";
     static final String COMP = "comp";
     static final String ASSIGN = "assign";
-    static final String LITERAL = "literal";
+    static final String FLOATLITERAL = "floatliteral";
+    static final String INTLITERAL = "intliteral";
+    static final String STRINGLITERAL = "stringliteral";
     static final String WRITE = "write";
     static final String READ = "read";
     static final String ID = "id";
     static final String MULOP = "mulop";
     static final String ADDOP = "addop";
+    static final String GLOBAL = "GLOBAL";
 
     AST(TableTree s) {
         //create a global root node for the AST
-        root = new ASTNode("GLOBAL", "r", null);
+        root = new ASTNode("GLOBAL", "r", AST.GLOBAL);
         //set that node as the current node
         currentNode = root;
         //initialize the symbol table tree for the class
@@ -30,10 +33,10 @@ class AST {
     }
 
     //begin building the code
-    ArrayList<String> buildCode() {
-        ArrayList<String> code = new ArrayList<>();
-
-        return code;
+    ArrayList<String> buildCode(SymbolTable s) {
+        //ArrayList<String> code = new ArrayList<>();
+        //code = root.buildCode();
+        return root.buildCode(s);
     }
 
     //automatically increments and returns a new temporary for use
@@ -54,33 +57,157 @@ class ASTNode {
     String rule;
     //the parent node for current node
     ASTNode parent;
+    String datatype = null;
     //list of all the node's children
     ArrayList<ASTNode> children = new ArrayList<>();
     //each entry in the code as a 3AC command
     ArrayList<String> code = new ArrayList<>();
+    SymbolTable table;
 
     //constructor to initialize stuff
     ASTNode(String v, String t, String r) {
         value = v;
         type = t;
         rule = r;
+
     }
 
     //recursively build the code using a post-order walk of the AST
-    ArrayList<String> buildCode() {
+    ArrayList<String> buildCode(SymbolTable s) {
         ArrayList<String> code = new ArrayList<>();
         for (ASTNode child : children) {
-            code.addAll(child.buildCode());
+            code.addAll(child.buildCode(s));
         }
 
+        String leftTemp;
+        String rightTemp;
+        //determine how to build the code for the node based on what rule it has
+        switch (rule) {
+            //if it is a literal, just initialize its datatype
+            case AST.INTLITERAL:
+                datatype = "I";
+                temp = value;
+                break;
+            case AST.FLOATLITERAL:
+                datatype = "F";
+                temp = value;
+                break;
+            case AST.STRINGLITERAL:
+                datatype = "S";
+                temp = value;
+                break;
+            case AST.ASSIGN:
+                //since we know operations are type safe, just determine datatype be left node
+                datatype = children.get(0).datatype;
+                code.add("STORE" + datatype + " " + children.get(1).temp + " " + children.get(0).value);
+                break;
+            case AST.ADDOP:
+                //create a new temporary for the result to be stored in
+                temp = AST.newTemp();
+                //get datatype from the leftmost node
+                datatype = children.get(0).datatype;
+
+                //if the left node is a variable id, we should load it into a new temporary
+                //otherwise, just use its already established temp
+                if (children.get(0).type.equals("l")) {
+                    leftTemp = AST.newTemp();
+                    code.add("STORE" + datatype + " " + children.get(0).value + " " + leftTemp);
+                } else {
+                    leftTemp = children.get(0).temp;
+                }
+
+                //if the right node is a variable id, we should load it into a new temporary
+                //otherwise, just use its already established temp
+                if (children.get(1).type.equals("l")) {
+                    rightTemp = AST.newTemp();
+                    code.add("STORE" + datatype + " " + children.get(1).value + " " + rightTemp);
+                } else {
+                    rightTemp = children.get(0).temp;
+                }
+
+                //either add or subtract the two nodes
+                if (value.equals("+")) {
+                    code.add("ADD" + datatype + " " + leftTemp + " " + rightTemp + " " + temp);
+                } else {
+                    code.add("SUB" + datatype + " " + leftTemp + " " + rightTemp + " " + temp);
+                }
+                break;
+            case AST.COMP:
+                break;
+            case AST.ELSE:
+                break;
+            case AST.FUNC:
+                code.add(0, "LABEL " + value);
+                code.add(1, "LINK");
+                code.add("RET");
+                break;
+            case AST.ID:
+                //find the variable's datatype by looking it up in the symbol table
+                datatype = s.findType(value);
+                break;
+            case AST.MULOP:
+                //create a new temporary to store the result
+                temp = AST.newTemp();
+                //get the datatype of the operation from the left node
+                datatype = children.get(0).datatype;
+
+                //if the left node is a variable id, we should load it into a new temporary
+                //otherwise, just use its already established temp
+                if (children.get(0).type.equals("l")) {
+                    leftTemp = AST.newTemp();
+                    code.add("STORE" + datatype + " " + children.get(0).value + " " + leftTemp);
+                } else {
+                    leftTemp = children.get(0).temp;
+                }
+
+                //if the right node is a variable id, we should load it into a new temporary
+                //otherwise, just use its already established temp
+                if (children.get(1).type.equals("l")) {
+                    rightTemp = AST.newTemp();
+                    code.add("STORE" + datatype + " " + children.get(1).value + " " + rightTemp);
+                } else {
+                    rightTemp = children.get(0).temp;
+                }
+
+                //either multiply or divide the two nodes
+                if (value.equals("*")) {
+                    code.add("MULT" + datatype + " " + leftTemp + " " + rightTemp + " " + temp);
+                } else {
+                    code.add("DIV" + datatype + " " + leftTemp + " " + rightTemp + " " + temp);
+                }
+                break;
+            case AST.READ:
+                for (ASTNode child : children) {
+                    code.add("READ" + s.findType(child.value) + " " + child.value);
+                }
+                break;
+            case AST.WRITE:
+                for (ASTNode child : children) {
+                    code.add("WRITE" + s.findType(child.value) + " " + child.value);
+                }
+                break;
+            case AST.IF:
+                break;
+            case AST.WHILE:
+                break;
+            case AST.GLOBAL:
+                break;
+            default:
+                System.out.println("Unhandled rule: " + rule);
+        }
         return code;
     }
 
     //creates and adds a new node to the current node's children
     ASTNode addNode(String v, String t, String r) {
         ASTNode newNode = new ASTNode(v, t, r);
-        children.add(newNode);
-        newNode.parent = this;
+        if (children.size() == 0) {
+            children.add(newNode);
+            newNode.parent = this;
+        } else {
+            children.add(newNode);
+            newNode.parent = this;
+        }
         return newNode;
     }
 
@@ -91,7 +218,6 @@ class ASTNode {
         children.set(children.indexOf(old), newer);
     }
 
-    //prints all AST nodes under and including the current node
     void printSubTree() {
         for (ASTNode child : children) {
             child.printSubTree();

@@ -50,6 +50,21 @@ class SymbolTable {
             }
         }
     }
+
+    String findType(String var) {
+        for (Entry entry : entries) {
+            if (entry.name.equals(var)) {
+                if (entry.type.equals("INT")) {
+                    return "I";
+                } else if (entry.type.equals("FLOAT")) {
+                    return "F";
+                } else {
+                    return "S";
+                }
+            }
+        }
+        return "none";
+    }
 }
 
 //container class to hold entry values

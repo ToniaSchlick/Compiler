@@ -9,8 +9,7 @@ public class Listener extends CompilersBaseListener {
     private boolean varDeclaration = false;
     private AST ast;
     private Stack<ASTNode> roots = new Stack<>();
-    private ASTNode nodePointer = null;
-    private ASTNode previousPointer = null;
+
 
     Listener(TableTree t, AST a) {
         tree = t;
@@ -146,15 +145,15 @@ public class Listener extends CompilersBaseListener {
             System.out.printf("DECLARATION ERROR %s", ctx.id().IDENTIFIER().toString());
             throw new ParseCancellationException();
         }
-        ast.currentNode = ast.currentNode.addNode(":=", "r", AST.ASSIGN);
-        roots.push(ast.currentNode);
+        //ast.currentNode = ast.currentNode.addNode(":=", "r", AST.ASSIGN);
+        //roots.push(ast.currentNode);
     }
 
     @Override
     public void exitString_decl(CompilersParser.String_declContext ctx) {
-        ast.currentNode = roots.pop();
-        ast.currentNode.addNode(ctx.str().STRINGLITERAL().toString(), "c", AST.LITERAL);
-        ast.currentNode = ast.currentNode.parent;
+        //ast.currentNode = roots.pop();
+        //ast.currentNode.addNode(ctx.str().STRINGLITERAL().toString(), "c", AST.STRINGLITERAL);
+        //ast.currentNode = ast.currentNode.parent;
     }
 
     @Override
@@ -338,9 +337,9 @@ public class Listener extends CompilersBaseListener {
     @Override
     public void enterPrimary(CompilersParser.PrimaryContext ctx) {
         if (ctx.FLOATLITERAL() != null) {
-            ast.currentNode = ast.currentNode.addNode(ctx.FLOATLITERAL().toString(), "c", AST.LITERAL);
+            ast.currentNode = ast.currentNode.addNode(ctx.FLOATLITERAL().toString(), "c", AST.FLOATLITERAL);
         } else if (ctx.INTLITERAL() != null) {
-            ast.currentNode = ast.currentNode.addNode(ctx.INTLITERAL().toString(), "c", AST.LITERAL);
+            ast.currentNode = ast.currentNode.addNode(ctx.INTLITERAL().toString(), "c", AST.INTLITERAL);
         } else {
             ast.currentNode = ast.currentNode.addNode(null, "r", "primary");
         }
@@ -350,7 +349,7 @@ public class Listener extends CompilersBaseListener {
     @Override
     public void exitPrimary(CompilersParser.PrimaryContext ctx) {
         ast.currentNode = roots.pop();
-        if (!ast.currentNode.rule.equals("literal")) {
+        if (!ast.currentNode.rule.equals(AST.INTLITERAL) && !ast.currentNode.rule.equals(AST.FLOATLITERAL)) {
             ast.currentNode.parent.replace(ast.currentNode, ast.currentNode.children.get(0));
         }
         ast.currentNode = ast.currentNode.parent;

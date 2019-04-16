@@ -13,14 +13,14 @@ public class Driver {
         CompilersParser parser;
         Listener listener;
         TableTree tree = new TableTree();
-        AST ast = new AST(tree);
+        AST ast = new AST();
         try {
             lexer = new CompilersLexer(CharStreams.fromFileName(args[0]));
             parser = new CompilersParser(new CommonTokenStream(lexer));
             listener = new Listener(tree, ast);
             new ParseTreeWalker().walk(listener, parser.program());
             //ast.root.printSubTree();
-            ArrayList<String> ac3 = ast.buildCode(ast.table.getGlobal());
+            ArrayList<String> ac3 = ast.buildCode(tree.getGlobal());
             for (String line : ac3) {
                 System.out.println(line);
             }

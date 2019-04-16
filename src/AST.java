@@ -3,10 +3,10 @@ import java.util.ArrayList;
 class AST {
     ASTNode root;
     ASTNode currentNode;
-    TableTree table;
 
     //constants to be used for code generation
-    static int numTemp = 0;
+    private static int numTemp = 0;
+    private static int numLabel = 0;
     static final String FUNC = "func_decl";
     static final String WHILE = "while_stmt";
     static final String IF = "if_stmt";
@@ -23,13 +23,12 @@ class AST {
     static final String ADDOP = "addop";
     static final String GLOBAL = "GLOBAL";
 
-    AST(TableTree s) {
+    AST() {
         //create a global root node for the AST
         root = new ASTNode("GLOBAL", "r", AST.GLOBAL);
         //set that node as the current node
         currentNode = root;
         //initialize the symbol table tree for the class
-        table = s;
     }
 
     //begin building the code
@@ -44,32 +43,35 @@ class AST {
         numTemp++;
         return "$T" + numTemp;
     }
+
+    //automatically increments and returns a new label
+    static String newLabel() {
+        numLabel++;
+        return "label" + numLabel;
+    }
 }
 
 class ASTNode {
     //the temporary value for the node when building the code
-    String temp;
+    private String temp;
     //what type the node is: 'r', 'l', 'c'
-    String type;
+    private String type;
     //the actual value stored in the node, can be null
     String value;
     //what rule the node was created from
     String rule;
     //the parent node for current node
     ASTNode parent;
-    String datatype = null;
+    //the actual datatype of the variable or result: 'F', 'I', or 'S'
+    private String datatype = null;
     //list of all the node's children
     ArrayList<ASTNode> children = new ArrayList<>();
-    //each entry in the code as a 3AC command
-    ArrayList<String> code = new ArrayList<>();
-    SymbolTable table;
 
     //constructor to initialize stuff
     ASTNode(String v, String t, String r) {
         value = v;
         type = t;
         rule = r;
-
     }
 
     //recursively build the code using a post-order walk of the AST
@@ -83,7 +85,7 @@ class ASTNode {
         String rightTemp;
         //determine how to build the code for the node based on what rule it has
         switch (rule) {
-            //if it is a literal, just initialize its datatype
+            //if it is a literal, just initialize its datatype and set its temp as its actual value
             case AST.INTLITERAL:
                 datatype = "I";
                 temp = value;
@@ -122,7 +124,7 @@ class ASTNode {
                     rightTemp = AST.newTemp();
                     code.add("STORE" + datatype + " " + children.get(1).value + " " + rightTemp);
                 } else {
-                    rightTemp = children.get(0).temp;
+                    rightTemp = children.get(1).temp;
                 }
 
                 //either add or subtract the two nodes
@@ -166,7 +168,7 @@ class ASTNode {
                     rightTemp = AST.newTemp();
                     code.add("STORE" + datatype + " " + children.get(1).value + " " + rightTemp);
                 } else {
-                    rightTemp = children.get(0).temp;
+                    rightTemp = children.get(1).temp;
                 }
 
                 //either multiply or divide the two nodes
@@ -222,6 +224,10 @@ class ASTNode {
         for (ASTNode child : children) {
             child.printSubTree();
         }
+        printNode();
+    }
+
+    void printNode() {
         System.out.printf("Value: %s; Rule: %s\n", value, rule);
     }
 }

@@ -72,8 +72,8 @@ public class Listener extends CompilersBaseListener {
         tree.exitCurrentScope();
         //remove the else-node from the if statement if it is empty
         ast.currentNode = roots.pop();
-        if (ast.currentNode.children.get(2).children.size() == 0) {
-            ast.currentNode.children.remove(2);
+        if (ast.currentNode.children.get(ast.currentNode.children.size()-1).children.size() == 0) {
+            ast.currentNode.children.remove(ast.currentNode.children.size()-1);
         }
         ast.currentNode = ast.currentNode.parent;
     }

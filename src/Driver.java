@@ -20,6 +20,8 @@ public class Driver {
             listener = new Listener(tree, ast);
             new ParseTreeWalker().walk(listener, parser.program());
             //ast.root.printSubTree();
+
+            //every element in this arraylist will be a single line of 3AC
             ArrayList<String> ac3 = ast.buildCode(tree.getGlobal());
             System.out.println(";IR CODE");
             for (String line : ac3) {
@@ -31,7 +33,9 @@ public class Driver {
 
         //catches ParseCancellationException that can be thrown if a declaration error occurs
         //logic to handle error is done elsewhere, just here to prevent program from spitting the error out
-        } catch (ParseCancellationException e) {}
+        } catch (ParseCancellationException e) {
+            System.out.println("Error parsing program");
+        }
 
         /*Code for Part 2*/
         /*

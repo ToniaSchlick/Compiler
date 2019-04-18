@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Stack;
 
 class AST {
     ASTNode root;
@@ -7,6 +9,7 @@ class AST {
     //constants to be used for code generation
     private static int numTemp = 0;
     private static int numLabel = 0;
+    static Stack<LinkedList<String>> labelStack = new Stack<>();
     static final String FUNC = "func_decl";
     static final String WHILE = "while_stmt";
     static final String IF = "if_stmt";
@@ -134,10 +137,63 @@ class ASTNode {
                 }
                 break;
             case AST.COMP:
-                break;
-            case AST.ELSE:
+                //create a new label for the comparison to jump to
+                String newlabel = AST.newLabel();
+                LinkedList<String> labels = new LinkedList<>();
+                //if this is part of an if, save the label for later
+                if(parent.rule.equals(AST.IF)) {
+                    labels.add(newlabel);
+                    AST.labelStack.push(labels);
+                }
+                //if this is part of a while, place the label in front of the comparison and
+                //create a new label to jump out of later
+                if(parent.rule.equals(AST.WHILE)) {
+                    code.add("LABEL " + newlabel);
+                    labels.add(newlabel);
+                    newlabel = AST.newLabel();
+                    labels.add(newlabel);
+                    AST.labelStack.push(labels);
+                }
+                //get the datatype of the operation and the left and right temporaries
+                datatype = children.get(0).datatype;
+                if (children.get(0).type.equals("1")) {
+                    leftTemp = AST.newTemp();
+                    code.add("STORE" + datatype + " " + children.get(0).value + " " + leftTemp);
+                } else {
+                    leftTemp = children.get(0).temp;
+                }
+                if (children.get(1).type.equals("1")) {
+                    rightTemp = AST.newTemp();
+                    code.add("STORE" + datatype + " " + children.get(0).value + " " + rightTemp);
+                } else {
+                    rightTemp = children.get(1).temp;
+                }
+
+                //determine what the jump logic will be, which is the opposite of the operator
+                String op = "";
+                switch(value) {
+                    case "=":
+                        op = "NE" + datatype;
+                        break;
+                    case "!=":
+                        op = "EQ" + datatype;
+                        break;
+                    case "<=":
+                        op = "GT" + datatype;
+                        break;
+                    case ">=":
+                        op = "LT" + datatype;
+                        break;
+                    case "<":
+                        op = "GE" + datatype;
+                        break;
+                    case ">":
+                        op = "LE" + datatype;
+                }
+                code.add(op + " " + leftTemp + " " + rightTemp + " " + newlabel);
                 break;
             case AST.FUNC:
+                //add the function code based on the assumption that there is only one function in the program
                 code.add(0, "LABEL " + value);
                 code.add(1, "LINK");
                 code.add("RET");
@@ -145,6 +201,7 @@ class ASTNode {
             case AST.ID:
                 //find the variable's datatype by looking it up in the symbol table
                 datatype = s.findType(value);
+                temp = value;
                 break;
             case AST.MULOP:
                 //create a new temporary to store the result
@@ -178,23 +235,42 @@ class ASTNode {
                 }
                 break;
             case AST.READ:
+                //creates a read statement for every child
                 for (ASTNode child : children) {
-                    code.add("READ" + s.findType(child.value) + " " + child.value);
+                    code.add("READ" + child.datatype + " " + child.value);
                 }
                 break;
             case AST.WRITE:
+                //creates a write statement for every child
                 for (ASTNode child : children) {
-                    code.add("WRITE" + s.findType(child.value) + " " + child.value);
+                    code.add("WRITE" + child.datatype + " " + child.value);
                 }
                 break;
             case AST.IF:
+                //adds the label to skip the if or else to the end of the if code
+                LinkedList<String> iflabels = AST.labelStack.pop();
+                code.add("LABEL " + iflabels.removeFirst());
                 break;
             case AST.WHILE:
+                //set the jump back to the beginning of the loop and the label to exit the loop
+                LinkedList<String> labellist = AST.labelStack.pop();
+                code.add("JUMP " + labellist.removeFirst());
+                code.add("LABEL " + labellist.removeFirst());
                 break;
             case AST.GLOBAL:
-                break;
+                return code;
             default:
                 System.out.println("Unhandled rule: " + rule);
+        }
+        //if the current node is a statement just before the else-block of an if statement
+        if (parent.rule.equals(AST.IF) && parent.children.indexOf(this) == parent.children.size()-2 &&
+            parent.children.get(parent.children.indexOf(this) + 1).rule.equals(AST.ELSE)) {
+            //place the jump over the else-block and set the label for the else-block itself
+            LinkedList<String> labels = AST.labelStack.peek();
+            String label = AST.newLabel();
+            labels.add(label);
+            code.add("JUMP " + label);
+            code.add("LABEL " + labels.removeFirst());
         }
         return code;
     }
@@ -219,6 +295,7 @@ class ASTNode {
         children.set(children.indexOf(old), newer);
     }
 
+    @SuppressWarnings({"WeakerAccess", "unused"})
     void printSubTree() {
         for (ASTNode child : children) {
             child.printSubTree();
@@ -226,7 +303,7 @@ class ASTNode {
         printNode();
     }
 
-    void printNode() {
+    private void printNode() {
         System.out.printf("Value: %s; Rule: %s\n", value, rule);
     }
 }

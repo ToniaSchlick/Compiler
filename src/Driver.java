@@ -28,6 +28,7 @@ public class Driver {
                 System.out.println(";" + line);
             }
             System.out.println(";tiny code");
+            convertToTiny(ac3);
         } catch (IOException e){
             System.out.println("Could not read file");
 
@@ -83,5 +84,9 @@ public class Driver {
             System.out.println("Value: " + token.getText());
         }
         */
+    }
+
+    private static void convertToTiny(ArrayList<String> ac3) {
+        
     }
 }

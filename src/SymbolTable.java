@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 class SymbolTable {
     private String scope;
-    private ArrayList<Entry> entries = new ArrayList<>();
+    ArrayList<Entry> entries = new ArrayList<>();
     SymbolTable(String s) {
         scope = s;
     }

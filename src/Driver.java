@@ -7,6 +7,9 @@ import java.util.ArrayList;
 
 public class Driver {
 
+    private static int numReg = 500;
+    private static String reg = "r500";
+
     public static void main(String[] args) {
 
         CompilersLexer lexer;
@@ -31,7 +34,7 @@ public class Driver {
             }
             System.out.println(";tiny code");
             //convert 3AC into tiny code
-            ArrayList<String> tiny = convertToTiny(ac3);
+            ArrayList<String> tiny = convertToTiny(ac3, tree.getGlobal());
             //print the results of the tiny code conversion
             for (String line : tiny) {
                 System.out.println(line);
@@ -93,14 +96,21 @@ public class Driver {
         */
     }
 
-    private static ArrayList<String> convertToTiny(ArrayList<String> ac3) {
+    private static ArrayList<String> convertToTiny(ArrayList<String> ac3, SymbolTable table) {
         ArrayList<String> tiny = new ArrayList<>();
+        for (Entry entry : table.entries) {
+            if (entry.type.equals("STRING")) {
+                tiny.add("str " + entry.name + " " + entry.value);
+            } else {
+                tiny.add("var " + entry.name);
+            }
+        }
         for (String fullLine : ac3) {
-            String [] line = fullLine.split(" ");
+            String[] line = fullLine.split(" ");
             if (line[0].contains("JUMP")) {
-
+                tiny.add("jmp " + line[1]);
             } else if (line[0].contains("LABEL")) {
-
+                tiny.add("label " + line[1]);
             } else if (line[0].equals("RET")) {
                 tiny.add("sys halt");
             } else if (!line[0].equals("LINK")){
@@ -128,17 +138,53 @@ public class Driver {
                 } else if (line[0].contains("READ")) {
                     tiny.add("sys read" + datatype + " " + line[1]);
                 } else if (line[0].contains("NE")) {
-
+                    if (!line[2].contains("$T")) {
+                        String reg = newReg();
+                        tiny.add("move " + line[2] + " " + reg);
+                        line[2] = reg;
+                    }
+                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("jne " + line[3]);
                 } else if (line[0].contains("EQ")) {
-
+                    if (!line[2].contains("$T")) {
+                        String reg = newReg();
+                        tiny.add("move " + line[2] + " " + reg);
+                        line[2] = reg;
+                    }
+                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("jeq " + line[3]);
                 } else if (line[0].contains("GT")) {
-
+                    if (!line[2].contains("$T")) {
+                        String reg = newReg();
+                        tiny.add("move " + line[2] + " " + reg);
+                        line[2] = reg;
+                    }
+                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("jgt " + line[3]);
                 } else if (line[0].contains("GE")) {
-
+                    if (!line[2].contains("$T")) {
+                        String reg = newReg();
+                        tiny.add("move " + line[2] + " " + reg);
+                        line[2] = reg;
+                    }
+                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("jge " + line[3]);
                 } else if (line[0].contains("LT")) {
-
-                } else if (line[0].contains("TE")) {
-
+                    if (!line[2].contains("$T")) {
+                        String reg = newReg();
+                        tiny.add("move " + line[2] + " " + reg);
+                        line[2] = reg;
+                    }
+                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("jlt " + line[3]);
+                } else if (line[0].contains("LE")) {
+                    if (!line[2].contains("$T")) {
+                        String reg = newReg();
+                        tiny.add("move " + line[2] + " " + reg);
+                        line[2] = reg;
+                    }
+                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("jle " + line[3]);
                 }
             }
         }
@@ -147,5 +193,10 @@ public class Driver {
 
     private static String TtoR(String t) {
         return t.replace("$T", "r");
+    }
+
+    private static String newReg() {
+        numReg++;
+        return "r" + numReg;
     }
 }

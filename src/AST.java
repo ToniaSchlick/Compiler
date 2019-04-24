@@ -162,9 +162,9 @@ class ASTNode {
                 } else {
                     leftTemp = children.get(0).temp;
                 }
-                if (children.get(1).type.equals("1")) {
+                if (children.get(1).type.equals("1") || !leftTemp.contains("$T")) {
                     rightTemp = AST.newTemp();
-                    code.add("STORE" + datatype + " " + children.get(0).value + " " + rightTemp);
+                    code.add("STORE" + datatype + " " + children.get(1).value + " " + rightTemp);
                 } else {
                     rightTemp = children.get(1).temp;
                 }

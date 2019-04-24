@@ -7,9 +7,6 @@ import java.util.ArrayList;
 
 public class Driver {
 
-    private static int numReg = 500;
-    private static String reg = "r500";
-
     public static void main(String[] args) {
 
         CompilersLexer lexer;
@@ -98,6 +95,7 @@ public class Driver {
 
     private static ArrayList<String> convertToTiny(ArrayList<String> ac3, SymbolTable table) {
         ArrayList<String> tiny = new ArrayList<>();
+        //initialize all the variables in the symbol table
         for (Entry entry : table.entries) {
             if (entry.type.equals("STRING")) {
                 tiny.add("str " + entry.name + " " + entry.value);
@@ -106,21 +104,30 @@ public class Driver {
             }
         }
         for (String fullLine : ac3) {
+            //split the commands into their different parts
             String[] line = fullLine.split(" ");
+
+            //converts JUMP to jmp command
             if (line[0].contains("JUMP")) {
                 tiny.add("jmp " + line[1]);
+            //converts LABEL to label command
             } else if (line[0].contains("LABEL")) {
                 tiny.add("label " + line[1]);
+            //due to givens in the assignment, we know the end of a function is the end of the program
             } else if (line[0].equals("RET")) {
                 tiny.add("sys halt");
             } else if (!line[0].equals("LINK")){
                 String datatype = line[0].substring(line[0].length()-1).toLowerCase();
-                //System.out.println(datatype);
                 if (datatype.equals("f")) {
                     datatype = "r";
                 }
+
+                //convert a STORE command to a move command
                 if (line[0].contains("STORE")) {
                     tiny.add("move " + TtoR(line[1]) + " " + TtoR(line[2]));
+                //for all math functions, in order to keep our registers consistent with our temporaries,
+                //we move the left operand in the function into the register we want the result to be stored
+                //in before the actual function
                 } else if (line[0].contains("MULT")) {
                     tiny.add("move " + TtoR(line[1]) + " " + TtoR(line[3]));
                     tiny.add("mul" + datatype + " " + TtoR(line[2]) + " " + TtoR(line[3]));
@@ -133,56 +140,29 @@ public class Driver {
                 } else if (line[0].contains("SUB")) {
                     tiny.add("move " + TtoR(line[1]) + " " + TtoR(line[3]));
                     tiny.add("sub" + datatype + " " + TtoR(line[2]) + " " + TtoR(line[3]));
+                //read and write commands
                 } else if (line[0].contains("WRITE")) {
                     tiny.add("sys write" + datatype + " " + line[1]);
                 } else if (line[0].contains("READ")) {
                     tiny.add("sys read" + datatype + " " + line[1]);
+                //for all comparison commands we ensure that at least one of the values is stored
+                //in a register for the comparison, then give the comp and jump commands
                 } else if (line[0].contains("NE")) {
-                    if (!line[2].contains("$T")) {
-                        String reg = newReg();
-                        tiny.add("move " + line[2] + " " + reg);
-                        line[2] = reg;
-                    }
                     tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jne " + line[3]);
                 } else if (line[0].contains("EQ")) {
-                    if (!line[2].contains("$T")) {
-                        String reg = newReg();
-                        tiny.add("move " + line[2] + " " + reg);
-                        line[2] = reg;
-                    }
                     tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jeq " + line[3]);
                 } else if (line[0].contains("GT")) {
-                    if (!line[2].contains("$T")) {
-                        String reg = newReg();
-                        tiny.add("move " + line[2] + " " + reg);
-                        line[2] = reg;
-                    }
                     tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jgt " + line[3]);
                 } else if (line[0].contains("GE")) {
-                    if (!line[2].contains("$T")) {
-                        String reg = newReg();
-                        tiny.add("move " + line[2] + " " + reg);
-                        line[2] = reg;
-                    }
                     tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jge " + line[3]);
                 } else if (line[0].contains("LT")) {
-                    if (!line[2].contains("$T")) {
-                        String reg = newReg();
-                        tiny.add("move " + line[2] + " " + reg);
-                        line[2] = reg;
-                    }
                     tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jlt " + line[3]);
                 } else if (line[0].contains("LE")) {
-                    if (!line[2].contains("$T")) {
-                        String reg = newReg();
-                        tiny.add("move " + line[2] + " " + reg);
-                        line[2] = reg;
-                    }
                     tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jle " + line[3]);
                 }
@@ -191,12 +171,8 @@ public class Driver {
         return tiny;
     }
 
+    //simple function to easily convert temporaries to registers
     private static String TtoR(String t) {
         return t.replace("$T", "r");
-    }
-
-    private static String newReg() {
-        numReg++;
-        return "r" + numReg;
     }
 }

@@ -145,8 +145,7 @@ public class Driver {
                     tiny.add("sys write" + datatype + " " + line[1]);
                 } else if (line[0].contains("READ")) {
                     tiny.add("sys read" + datatype + " " + line[1]);
-                //for all comparison commands we ensure that at least one of the values is stored
-                //in a register for the comparison, then give the comp and jump commands
+                //give the comp and jump commands
                 } else if (line[0].contains("NE")) {
                     tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jne " + line[3]);

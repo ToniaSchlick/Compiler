@@ -113,21 +113,11 @@ class ASTNode {
 
                 //if the left node is a variable id, we should load it into a new temporary
                 //otherwise, just use its already established temp
-                if (children.get(0).type.equals("l")) {
-                    leftTemp = AST.newTemp();
-                    code.add("STORE" + datatype + " " + children.get(0).value + " " + leftTemp);
-                } else {
-                    leftTemp = children.get(0).temp;
-                }
+                leftTemp = children.get(0).temp;
 
                 //if the right node is a variable id, we should load it into a new temporary
                 //otherwise, just use its already established temp
-                if (children.get(1).type.equals("l")) {
-                    rightTemp = AST.newTemp();
-                    code.add("STORE" + datatype + " " + children.get(1).value + " " + rightTemp);
-                } else {
-                    rightTemp = children.get(1).temp;
-                }
+                rightTemp = children.get(1).temp;
 
                 //either add or subtract the two nodes
                 if (value.equals("+")) {
@@ -156,13 +146,9 @@ class ASTNode {
                 }
                 //get the datatype of the operation and the left and right temporaries
                 datatype = children.get(0).datatype;
-                if (children.get(0).type.equals("1")) {
-                    leftTemp = AST.newTemp();
-                    code.add("STORE" + datatype + " " + children.get(0).value + " " + leftTemp);
-                } else {
-                    leftTemp = children.get(0).temp;
-                }
-                if (children.get(1).type.equals("1") || !leftTemp.contains("$T")) {
+                leftTemp = children.get(0).temp;
+
+                if (!leftTemp.contains("$T")) {
                     rightTemp = AST.newTemp();
                     code.add("STORE" + datatype + " " + children.get(1).value + " " + rightTemp);
                 } else {
@@ -211,21 +197,11 @@ class ASTNode {
 
                 //if the left node is a variable id, we should load it into a new temporary
                 //otherwise, just use its already established temp
-                if (children.get(0).type.equals("l")) {
-                    leftTemp = AST.newTemp();
-                    code.add("STORE" + datatype + " " + children.get(0).value + " " + leftTemp);
-                } else {
-                    leftTemp = children.get(0).temp;
-                }
+                leftTemp = children.get(0).temp;
 
                 //if the right node is a variable id, we should load it into a new temporary
                 //otherwise, just use its already established temp
-                if (children.get(1).type.equals("l")) {
-                    rightTemp = AST.newTemp();
-                    code.add("STORE" + datatype + " " + children.get(1).value + " " + rightTemp);
-                } else {
-                    rightTemp = children.get(1).temp;
-                }
+                rightTemp = children.get(1).temp;
 
                 //either multiply or divide the two nodes
                 if (value.equals("*")) {

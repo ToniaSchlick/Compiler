@@ -1,0 +1,52 @@
+Unhandled rule: else_stmt
+;IR CODE
+;LABEL main
+;LINK
+;STOREI 7 num
+;STOREI 2 i
+;STOREI 42 a
+;STOREI 5 $T1
+;GEI i $T1 label1
+;ADDI num a $T2
+;STOREI $T2 num
+;STOREI 3 $T3
+;GEI i $T3 label2
+;ADDI num a $T4
+;STOREI $T4 num
+;LABEL label2
+;JUMP label3
+;LABEL label1
+;SUBI num a $T5
+;STOREI $T5 num
+;LABEL label3
+;WRITEI num
+;RET
+;tiny code
+var i
+var a
+var num
+label main
+move 7 num
+move 2 i
+move 42 a
+move 5 r1
+compi i r1
+jge label1
+move num r2
+addi a r2
+move r2 num
+move 3 r3
+compi i r3
+jge label2
+move num r4
+addi a r4
+move r4 num
+label label2
+jmp label3
+label label1
+move num r5
+subi a r5
+move r5 num
+label label3
+sys writei num
+sys halt

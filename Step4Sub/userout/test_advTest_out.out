@@ -1,0 +1,7 @@
+error on line 1 : unknown opcode
+error on line 53 : both  operands are memory refs
+error on line 59 : unknown opcode
+error on line 75 : unknown opcode
+error on line 78 : unknown opcode
+error on line 87 : unknown opcode
+error on line 92 : both  operands are memory refs

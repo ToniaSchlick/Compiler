@@ -1,0 +1,3 @@
+error on line 32 : both  operands are memory refs
+error on line 35 : unknown opcode
+error on line 44 : both  operands are memory refs

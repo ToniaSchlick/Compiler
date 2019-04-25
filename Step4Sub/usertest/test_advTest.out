@@ -1,0 +1,97 @@
+Unhandled rule: else_stmt
+;IR CODE
+;LABEL main
+;LINK
+;STOREF 0.0001 tolerance
+;STOREF 7.0 num
+;STOREF num approx
+;STOREI 0 count
+;STOREF 0.0 diff
+;STOREI 0 enough
+;LABEL label1
+;STOREI 1 $T1
+;EQI enough $T1 label2
+;ADDI count 1 $T2
+;STOREI $T2 count
+;DIVF num approx $T3
+;ADDF approx $T3 $T4
+;MULTF 0.5 $T4 $T5
+;STOREF $T5 newapprox
+;SUBF approx newapprox $T6
+;STOREF $T6 diff
+;STOREF 0.0 $T7
+;LEF diff $T7 label3
+;STOREF tolerance $T8
+;GEF diff $T8 label4
+;STOREI 1 enough
+;LABEL label4
+;JUMP label5
+;LABEL label3
+;SUBF 0.0 tolerance $T9
+;STOREF - $T10
+;LEF diff $T10 label6
+;STOREI 1 enough
+;LABEL label6
+;LABEL label5
+;STOREF newapprox approx
+;JUMP label1
+;LABEL label2
+;WRITEF approx
+;WRITEI count
+;RET
+;tiny code
+var count
+var enough
+var newapprox
+var approx
+var num
+var tolerance
+var diff
+label main
+move 0.0001 tolerance
+move 7.0 num
+move num approx
+move 0 count
+move 0.0 diff
+move 0 enough
+label label1
+move 1 r1
+compi enough r1
+jeq label2
+move count r2
+addi 1 r2
+move r2 count
+move num r3
+divr approx r3
+move approx r4
+addr r3 r4
+move 0.5 r5
+mulr r4 r5
+move r5 newapprox
+move approx r6
+subr newapprox r6
+move r6 diff
+move 0.0 r7
+compr diff r7
+jle label3
+move tolerance r8
+compr diff r8
+jge label4
+move 1 enough
+label label4
+jmp label5
+label label3
+move 0.0 r9
+subr tolerance r9
+move - r10
+compr diff r10
+jle label6
+move 1 enough
+label label6
+label label5
+move newapprox approx
+jmp label1
+label label2
+sys writer approx
+sys writei count
+sys halt

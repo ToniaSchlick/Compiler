@@ -147,22 +147,22 @@ public class Driver {
                     tiny.add("sys read" + datatype + " " + line[1]);
                 //give the comp and jump commands
                 } else if (line[0].contains("NE")) {
-                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("cmp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jne " + line[3]);
                 } else if (line[0].contains("EQ")) {
-                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("cmp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jeq " + line[3]);
                 } else if (line[0].contains("GT")) {
-                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("cmp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jgt " + line[3]);
                 } else if (line[0].contains("GE")) {
-                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("cmp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jge " + line[3]);
                 } else if (line[0].contains("LT")) {
-                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("cmp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jlt " + line[3]);
                 } else if (line[0].contains("LE")) {
-                    tiny.add("comp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
+                    tiny.add("cmp" + datatype + " " + TtoR(line[1]) + " " + TtoR(line[2]));
                     tiny.add("jle " + line[3]);
                 }
             }

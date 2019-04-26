@@ -103,7 +103,13 @@ class ASTNode {
             case AST.ASSIGN:
                 //since we know operations are type safe, just determine datatype be left node
                 datatype = children.get(0).datatype;
-                code.add("STORE" + datatype + " " + children.get(1).temp + " " + children.get(0).value);
+                if (children.get(1).rule.equals(AST.ID)) {
+                    rightTemp = AST.newTemp();
+                    code.add("STORE" + datatype + " " + children.get(1).temp + " " + rightTemp);
+                } else {
+                    rightTemp = children.get(1).temp;
+                }
+                code.add("STORE" + datatype + " " + rightTemp + " " + children.get(0).value);
                 break;
             case AST.ADDOP:
                 //create a new temporary for the result to be stored in
@@ -236,7 +242,7 @@ class ASTNode {
             case AST.GLOBAL:
                 return code;
             default:
-                System.out.println("Unhandled rule: " + rule);
+                //System.out.println("Unhandled rule: " + rule);
         }
         //if the current node is a statement just before the else-block of an if statement
         if (parent.rule.equals(AST.IF) && parent.children.indexOf(this) == parent.children.size()-2 &&

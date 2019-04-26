@@ -1,3 +1,13 @@
-error on line 32 : both  operands are memory refs
-error on line 35 : unknown opcode
-error on line 44 : both  operands are memory refs
+
+STATISTICS _____________________________
+   #Instructions:0
+    (move-ops mem:0, reglit:0)
+    ( int-ops mem:0, reglit:0)
+    (  fp-ops mem:0, reglit:0)
+   Memory Usage (mem:0,reg:401757919)
+      register-use[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+   Total Cycles = 0
+OTHER STATSvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    (int-ops:0, fp-ops:0)
+    (branches:0)
+      peephole-ops:0
